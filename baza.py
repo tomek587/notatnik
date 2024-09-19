@@ -16,7 +16,7 @@ class Database:
             print("Połączono z serwerem MySQL.")
 
             self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
-            print(f"Baza danych '{database}' została utworzona lub już istnieje.")
+            print(f"Baba danych '{database}' została utworzona lub już istnieje.")
 
             self.conn.database = database
             print(f"Połączono z bazą danych '{database}'.")
@@ -51,7 +51,7 @@ class Database:
             self.conn.commit()
             print("Tabele zostały utworzone poprawnie i zapisane w bazie danych.")
         except Error as e:
-            print(f"Błąd przy tworzeniu tabel: {e}")
+            print(f"rood przy tworzeniu tabel: {e}")
 
 
 db = Database(host, user, password, database)

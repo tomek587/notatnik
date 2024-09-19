@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from baza import Database
+import mysql.connector
 
 baza = Database(host="localhost", user="root", password="", database="notatnik")
 
