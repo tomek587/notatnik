@@ -16,7 +16,7 @@ class Database:
             print("Połączono z serwerem MySQL.")
 
             self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
-            print(f"Baba danych '{database}' została utworzona lub już istnieje.")
+            print(f"Baza danych '{database}' została utworzona lub już istnieje.")
 
             self.conn.database = database
             print(f"Połączono z bazą danych '{database}'.")
