@@ -81,6 +81,54 @@ def wyswietl_notatki(notatki_listbox, login):
         notatki_listbox.insert(tk.END, "Brak notatek")
 
 
+def check_user(self, login, password):
+    query = "SELECT * FROM users WHERE login = %s AND password = %s"
+    self.cursor.execute(query, (login, password))
+    user = self.cursor.fetchone()
+    return user
+
+
+def insert_user(self, login, password):
+    try:
+        query = "INSERT INTO users (login, password) VALUES (%s, %s)"
+        self.cursor.execute(query, (login, password))
+        self.conn.commit()
+    except mysql.connector.IntegrityError:
+        return False
+    return True
+
+
+def get_user_id(self, login):
+    query = "SELECT id FROM users WHERE login = %s"
+    self.cursor.execute(query, (login,))
+    user_id = self.cursor.fetchone()
+    return user_id[0] if user_id else None
+
+
+def insert_notatka(self, tresc, user_id):
+    query = "INSERT INTO notatki (tresc, user_id) VALUES (%s, %s)"
+    self.cursor.execute(query, (tresc, user_id))
+    self.conn.commit()
+
+
+def select_notatki_by_user(self, user_id):
+    query = "SELECT * FROM notatki WHERE user_id = %s"
+    self.cursor.execute(query, (user_id,))
+    notatki = self.cursor.fetchall()
+    return notatki
+
+
+def delete_last_notatka(self):
+    query = "DELETE FROM notatki WHERE id = (SELECT MAX(id) FROM notatki)"
+    self.cursor.execute(query)
+    self.conn.commit()
+
+
+def close(self):
+    if self.conn:
+        self.conn.close()
+
+
 # Aplikacja
 root = tk.Tk()
 root.title("Logowanie i Rejestracja")
