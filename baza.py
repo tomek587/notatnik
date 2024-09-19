@@ -53,4 +53,5 @@ class Database:
         except Error as e:
             print(f"Błąd przy tworzeniu tabel: {e}")
 
+
 db = Database(host, user, password, database)

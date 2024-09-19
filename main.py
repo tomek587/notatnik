@@ -6,7 +6,8 @@ baza = Database(host="localhost", user="root", password="", database="notatnik")
 
 baza.create_tables()
 
-##dsdsd
+
+# dsdsd
 def rejestracja():
     login = login_entry.get().strip()
     password = haslo_entry.get().strip()
