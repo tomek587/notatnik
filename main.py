@@ -105,7 +105,6 @@ def zaladuj_okno_logowania():
     rejestracja_btn = ttk.Button(login_frame, text="Zarejestruj", command=rejestracja)
     rejestracja_btn.grid(row=2, column=1, padx=10, pady=10)
 
-# Aplikacja
 root = tk.Tk()
 root.title("Notatnik")
 root.geometry("550x600")
