@@ -1,3 +1,7 @@
+# usuń btn powinien usuwac wybraną notatke zamiast ostatniej
+# dodać przycisk edytuj który pozwala edytować daną notatkę
+
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from baza import Database
@@ -37,7 +41,7 @@ def otworz_notatnik(login):
 
     tk.Label(notatnik_frame, text=f"Witaj, {login}", font=("Helvetica", 14)).pack(pady=10)
 
-    notatka_entry = tk.Text(notatnik_frame, height=7, width=40)
+    notatka_entry = tk.Text(notatnik_frame, height=15, width=40)
     notatka_entry.pack(padx=10, pady=10)
 
     dodaj_btn = ttk.Button(notatnik_frame, text="Dodaj notatkę",
