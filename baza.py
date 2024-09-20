@@ -13,13 +13,10 @@ class Database:
             connect = mysql.connector.connect(host=host, user=user, password=password)
             self.conn = connect
             self.cursor = self.conn.cursor()
-            print("połączono z serwerem")
 
             self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
-            print(f"baza danych '{database}' utworzona lub już istnieje")
 
             self.conn.database = database
-            print(f"połączono z '{database}'")
 
             self.create_tables()
 
@@ -36,7 +33,6 @@ class Database:
                     password VARCHAR(255) NOT NULL
                 )
             """)
-            print("tabela users utworzona")
 
             self.cursor.execute("""
                 CREATE TABLE IF NOT EXISTS notatki (
@@ -46,12 +42,12 @@ class Database:
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                 )
             """)
-            print("tabela notatnik utworzona")
 
             self.conn.commit()
 
         except Error as e:
             print(f"Błąd przy tworzeniu tabel: {e}")
+            self.conn = None
 
     def check_user(self, login, password):
         query = "SELECT * FROM users WHERE login = %s AND password = %s"
@@ -74,16 +70,16 @@ class Database:
         user_id = self.cursor.fetchone()
         return user_id[0] if user_id else None
 
-    def insert_notatka(self, tresc, user_id):
-        query = "INSERT INTO notatki (tresc, user_id) VALUES (%s, %s)"
-        self.cursor.execute(query, (tresc, user_id))
-        self.conn.commit()
-
     def select_notatki_by_user(self, user_id):
         query = "SELECT * FROM notatki WHERE user_id = %s"
         self.cursor.execute(query, (user_id,))
         notatki = self.cursor.fetchall()
         return notatki
+
+    def insert_notatka(self, tresc, user_id):
+        query = "INSERT INTO notatki (tresc, user_id) VALUES (%s, %s)"
+        self.cursor.execute(query, (tresc, user_id))
+        self.conn.commit()
 
     def delete_last_notatka(self):
         query = "DELETE FROM notatki WHERE id = (SELECT MAX(id) FROM notatki)"
