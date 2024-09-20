@@ -1,5 +1,7 @@
 # usuń btn powinien usuwac wybraną notatke zamiast ostatniej
 # dodać przycisk edytuj który pozwala edytować daną notatkę
+# dodać do bazy danych timestamp i pokazywac go w poglądzie po prawej
+# skrócić domyslnie każdy podgląd by zmieścić date
 
 
 import tkinter as tk
