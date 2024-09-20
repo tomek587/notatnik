@@ -46,8 +46,12 @@ def otworz_notatnik(login):
     notatki_listbox = tk.Listbox(notatnik_frame, height=10, width=50)
     notatki_listbox.pack(padx=10, pady=10)
 
-    odswiez_btn = ttk.Button(notatnik_frame, text="Odśwież notatki", command=lambda: wyswietl_notatki(notatki_listbox, login))
+    odswiez_btn = ttk.Button(notatnik_frame, text="Odśwież", command=lambda: wyswietl_notatki(notatki_listbox, login))
     odswiez_btn.pack(padx=10, pady=10)
+
+    usun_btn = ttk.Button(notatnik_frame, text="Usuń ostatnią notatkę",
+                          command=lambda: usun_ostatnia_notatke(login, notatki_listbox))
+    usun_btn.pack(padx=10, pady=10)
 
     wyswietl_notatki(notatki_listbox, login)
 
@@ -74,6 +78,11 @@ def wyswietl_notatki(notatki_listbox, login):
             notatki_listbox.insert(tk.END, notatka[1])
     else:
         notatki_listbox.insert(tk.END, "Brak notatek")
+
+def usun_ostatnia_notatke(login, notatki_listbox):
+    baza.get_user_id(login)
+    baza.delete_last_notatka()
+    wyswietl_notatki(notatki_listbox, login)
 
 def wyloguj(notatnik_frame):
     notatnik_frame.destroy()
