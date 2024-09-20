@@ -13,12 +13,12 @@ def rejestracja():
 
     if login and password:
         if baza.check_user(login, password):
-            messagebox.showerror("Taki użytkownik już istnieje")
+            messagebox.showerror(title="Error", message="Taki użytkownik już istnieje")
         else:
             baza.insert_user(login, password)
-            messagebox.showinfo("Rejestracja udana")
+            messagebox.showinfo(title="Info", message="Rejestracja udana")
     else:
-        messagebox.showerror("Podaj login i hasło")
+        messagebox.showerror(title="Error", message="Podaj login i hasło")
 
 
 def logowanie():
@@ -28,10 +28,10 @@ def logowanie():
     user = baza.check_user(login, password)
 
     if user:
-        messagebox.showinfo(f"Zalogowano jako {login}")
+        messagebox.showinfo(title="Info", message=f"Zalogowano jako {login}")
         otworz_notatnik(login)
     else:
-        messagebox.showerror("Błędny login lub hasło")
+        messagebox.showerror(title="Error", message="Błędny login lub hasło")
 
 
 def otworz_notatnik(login):
@@ -65,7 +65,7 @@ def dodaj_notatke(notatka_entry, login):
         baza.insert_notatka(text, user_id)
         notatka_entry.delete("1.0", tk.END)
     else:
-        messagebox.showerror("Notatka nie może być pasta")
+        messagebox.showerror(title="Error", message="Notatka nie może być pasta")
 
 
 def wyswietl_notatki(notatki_listbox, login):
