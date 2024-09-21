@@ -102,8 +102,6 @@ def usun_wybrana_notatka(notatki_listbox, notatka_entry, login):
             baza.delete_notatka(notatka_id)
             notatka_entry.delete("1.0", tk.END)
             wyswietl_notatki(notatki_listbox, login)
-    else:
-        messagebox.showerror(title="Error", message="Nie wybrano notatki do usunięcia.")
 
 def wyloguj(notatnik_frame):
     notatnik_frame.destroy()
