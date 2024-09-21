@@ -77,9 +77,9 @@ def wyswietl_notatki(notatki_listbox, login):
         notatki_listbox.insert(tk.END, "Brak notatek")
     else:
         for notatka in notatki:
-            short_text = (notatka[1][:30] + '...') if len(notatka[1]) > 30 else notatka[1]
+            short_text = (notatka[1][:41] + '...') if len(notatka[1]) > 30 else notatka[1]
             timestamp = notatka[3].strftime('%d-%m-%Y')
-            notatki_listbox.insert(tk.END, f"{short_text}...  {timestamp}")
+            notatki_listbox.insert(tk.END, f"{short_text}  {timestamp}")
 
 def wyswietl_zaznaczona_notatka(notatki_listbox, notatka_entry, login):
     selected_index = notatki_listbox.curselection() # zwraca wybraną wartość z listy listbox
