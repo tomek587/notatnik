@@ -1,9 +1,3 @@
-# usuń btn powinien usuwac wybraną notatke zamiast ostatniej
-# dodać przycisk edytuj który pozwala edytować daną notatkę
-# dodać do bazy danych timestamp i pokazywac go w poglądzie po prawej
-# skrócić domyslnie każdy podgląd by zmieścić date
-
-
 import tkinter as tk
 from tkinter import ttk, messagebox
 from baza import Database
@@ -43,29 +37,24 @@ def otworz_notatnik(login):
 
     tk.Label(notatnik_frame, text=f"Witaj, {login}", font=("Helvetica", 14)).pack(pady=10)
 
-    notatka_entry = tk.Text(notatnik_frame, height=15, width=40)
+    notatka_entry = tk.Text(notatnik_frame, height=10, width=40)
     notatka_entry.pack(padx=10, pady=10)
 
     dodaj_btn = ttk.Button(notatnik_frame, text="Dodaj notatkę",
                            command=lambda: dodaj_notatke(notatka_entry, login, notatki_listbox))
     dodaj_btn.pack(padx=10, pady=5)
 
+    usun_notatke_btn = ttk.Button(notatnik_frame, text="Usuń notatkę",
+                                  command=lambda: usun_wybrana_notatka(notatki_listbox, notatka_entry, login))
+    usun_notatke_btn.pack(padx=10, pady=5)
+
     notatki_listbox = tk.Listbox(notatnik_frame, height=10, width=50)
     notatki_listbox.pack(padx=10, pady=10)
 
-    button_frame = tk.Frame(notatnik_frame)
-    button_frame.pack(pady=10)
+    notatki_listbox.bind('<<ListboxSelect>>', lambda event: wyswietl_zaznaczona_notatka(notatki_listbox, notatka_entry, login))
 
-    odswiez_btn = ttk.Button(button_frame, text="Odśwież",
-                             command=lambda: wyswietl_notatki(notatki_listbox, login))
-    odswiez_btn.grid(row=0, column=0, padx=10, pady=5)
-
-    usun_btn = ttk.Button(button_frame, text="Usuń ostatnią notatkę",
-                          command=lambda: usun_ostatnia_notatke(login, notatki_listbox))
-    usun_btn.grid(row=0, column=1, padx=10, pady=5)
-
-    wyloguj_btn = ttk.Button(button_frame, text="Wyloguj", command=lambda: wyloguj(notatnik_frame))
-    wyloguj_btn.grid(row=1, column=0, columnspan=2, pady=10)
+    wyloguj_btn = ttk.Button(notatnik_frame, text="Wyloguj", command=lambda: wyloguj(notatnik_frame))
+    wyloguj_btn.pack(pady=10)
 
     wyswietl_notatki(notatki_listbox, login)
 
@@ -88,12 +77,34 @@ def wyswietl_notatki(notatki_listbox, login):
         notatki_listbox.insert(tk.END, "Brak notatek")
     else:
         for notatka in notatki:
-            notatki_listbox.insert(tk.END, notatka[1])
+            # Shorten the note preview and append the timestamp
+            shortened_text = (notatka[1][:30] + '...') if len(notatka[1]) > 30 else notatka[1]
+            timestamp = notatka[3].strftime('%Y-%m-%d %H:%M')  # Format the timestamp
+            notatki_listbox.insert(tk.END, f"{shortened_text} (dodano: {timestamp})")
 
-def usun_ostatnia_notatke(login, notatki_listbox):
-    baza.get_user_id(login)
-    baza.delete_last_notatka()
-    wyswietl_notatki(notatki_listbox, login)
+def wyswietl_zaznaczona_notatka(notatki_listbox, notatka_entry, login):
+    selected_index = notatki_listbox.curselection() # zwraca wybraną wartość z listy listbox
+    if selected_index:
+        selected_index = selected_index[0]
+        user_id = baza.get_user_id(login)
+        notatki = baza.select_notatki_by_user(user_id)
+        if selected_index < len(notatki):
+            notatka_entry.delete("1.0", tk.END)
+            notatka_entry.insert(tk.END, notatki[selected_index][1])
+
+def usun_wybrana_notatka(notatki_listbox, notatka_entry, login):
+    selected_index = notatki_listbox.curselection()
+    if selected_index:
+        selected_index = selected_index[0]
+        user_id = baza.get_user_id(login)
+        notatki = baza.select_notatki_by_user(user_id)
+        if selected_index < len(notatki):
+            notatka_id = notatki[selected_index][0]
+            baza.delete_notatka(notatka_id)
+            notatka_entry.delete("1.0", tk.END)
+            wyswietl_notatki(notatki_listbox, login)
+    else:
+        messagebox.showerror(title="Error", message="Nie wybrano notatki do usunięcia.")
 
 def wyloguj(notatnik_frame):
     notatnik_frame.destroy()
@@ -127,7 +138,7 @@ def zaladuj_okno_logowania():
 
 root = tk.Tk()
 root.title("Notatnik")
-root.geometry("600x700")
+root.geometry("600x615")
 root.iconbitmap("icon.ico")
 
 zaladuj_okno_logowania()

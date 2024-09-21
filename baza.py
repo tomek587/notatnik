@@ -1,12 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
 
-host = 'localhost'
-user = 'root'
-password = ''
-database = 'notatnik'
-
-
 class Database:
     def __init__(self, host, user, password, database):
         try:
@@ -15,7 +9,6 @@ class Database:
             self.cursor = self.conn.cursor()
 
             self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
-
             self.conn.database = database
 
             self.create_tables()
@@ -39,7 +32,8 @@ class Database:
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     tresc TEXT NOT NULL,
                     user_id INT,
-                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
                 )
             """)
 
@@ -81,13 +75,11 @@ class Database:
         self.cursor.execute(query, (tresc, user_id))
         self.conn.commit()
 
-    def delete_last_notatka(self):
-        query = "DELETE FROM notatki WHERE id = (SELECT MAX(id) FROM notatki)"
-        self.cursor.execute(query)
+    def delete_notatka(self, notatka_id):
+        query = "DELETE FROM notatki WHERE id = %s"
+        self.cursor.execute(query, (notatka_id,))
         self.conn.commit()
 
     def close(self):
         if self.conn:
             self.conn.close()
-
-db = Database(host, user, password, database)
