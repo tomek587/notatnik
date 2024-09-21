@@ -1,5 +1,10 @@
 import mysql.connector
 from mysql.connector import Error
+host = "localhost"
+user="root"
+password=""
+database="notatnik"
+
 
 class Database:
     def __init__(self, host, user, password, database):
@@ -9,6 +14,8 @@ class Database:
             self.cursor = self.conn.cursor()
 
             self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
+            self.conn.commit()
+
             self.conn.database = database
 
             self.create_tables()
