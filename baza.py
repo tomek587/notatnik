@@ -1,9 +1,5 @@
 import mysql.connector
 from mysql.connector import Error
-host = "localhost"
-user="root"
-password=""
-database="notatnik"
 
 
 class Database:
