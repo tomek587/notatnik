@@ -31,6 +31,7 @@ def logowanie():
 
 def otworz_notatnik(login):
     login_frame.destroy()
+    root.geometry("600x615")
 
     notatnik_frame = tk.Frame(root)
     notatnik_frame.pack(pady=20)
@@ -135,7 +136,7 @@ def zaladuj_okno_logowania():
 
 root = tk.Tk()
 root.title("Notatnik")
-root.geometry("600x615")
+root.geometry("300x150")
 root.iconbitmap("icon.ico")
 
 zaladuj_okno_logowania()
