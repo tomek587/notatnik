@@ -120,6 +120,7 @@ def wyloguj(notatnik_frame):
 
 def zaladuj_okno_logowania():
     global login_frame
+    root.geometry("300x150")
 
     login_frame = tk.Frame(root)
     login_frame.pack(pady=20)
@@ -147,7 +148,6 @@ def zaladuj_okno_logowania():
 
 root = tk.Tk()
 root.title("Notatnik")
-root.geometry("300x150")
 root.iconbitmap("icon.ico")
 
 zaladuj_okno_logowania()
