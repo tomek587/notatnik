@@ -53,13 +53,9 @@ class Database:
         return user
 
     def insert_user(self, login, password):
-        try:
-            query = "INSERT INTO users (login, password) VALUES (%s, %s)"
-            self.cursor.execute(query, (login, password))
-            self.conn.commit()
-        except mysql.connector.IntegrityError:
-            return False
-        return True
+        query = "INSERT INTO users (login, password) VALUES (%s, %s)"
+        self.cursor.execute(query, (login, password))
+        self.conn.commit()
 
     def get_user_id(self, login):
         query = "SELECT id FROM users WHERE login = %s"
