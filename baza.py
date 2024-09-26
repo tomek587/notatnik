@@ -47,15 +47,19 @@ class Database:
             self.conn = None
 
     def check_user(self, login, password):
-        query = "SELECT * FROM users WHERE login = %s AND password = SHA2(%s, 256)"
+        query = "SELECT * FROM users WHERE login = %s AND password = %s"
         self.cursor.execute(query, (login, password))
         user = self.cursor.fetchone()
         return user
 
     def insert_user(self, login, password):
-        query = "INSERT INTO users (login, password) VALUES (%s, SHA2(%s, 256))"
-        self.cursor.execute(query, (login, password))
-        self.conn.commit()
+        try:
+            query = "INSERT INTO users (login, password) VALUES (%s, %s)"
+            self.cursor.execute(query, (login, password))
+            self.conn.commit()
+        except mysql.connector.IntegrityError:
+            return False
+        return True
 
     def get_user_id(self, login):
         query = "SELECT id FROM users WHERE login = %s"
