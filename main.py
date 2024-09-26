@@ -40,10 +40,10 @@ def otworz_notatnik():
 
 def wyloguj(notatnik_frame):
     notatnik_frame.destroy()
-    zaladuj_okno_logowania()
+    zaladuj_logowanie()
 
 
-def zaladuj_okno_logowania():
+def zaladuj_logowanie():
     global login_frame
     root.geometry("300x150")
 
@@ -75,6 +75,6 @@ root = tk.Tk()
 root.title("Notatnik")
 root.iconbitmap("icon.ico")
 
-zaladuj_okno_logowania()
+zaladuj_logowanie()
 
 root.mainloop()
