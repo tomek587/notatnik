@@ -34,32 +34,51 @@ def logowanie():
 
 def otworz_notatnik(login):
     login_frame.destroy()
-    root.geometry("600x615")
+    root.geometry("800x600")
 
-    notatnik_frame = tk.Frame(root)
-    notatnik_frame.pack(pady=20)
+    notatnik_frame = tk.Frame(root, bg="#2F2F2F")
+    notatnik_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-    tk.Label(notatnik_frame, text=f"Witaj, {login}", font=("Helvetica", 14)).pack(pady=10)
+    tk.Label(notatnik_frame, text=f"Witaj, {login}", font=("Helvetica", 14), bg="#2F2F2F",
+             fg="white").grid(row=0,
+                              column=0,
+                              columnspan=3,
+                              pady=10)
 
-    notatka_entry = tk.Text(notatnik_frame, height=10, width=40)
-    notatka_entry.pack(padx=10, pady=10)
+    notatka_entry = tk.Text(notatnik_frame, height=10, width=40, bg="#4F4F4F", fg="white", insertbackground="white")
+    notatka_entry.grid(row=1, column=0, padx=10, pady=10, columnspan=2)
 
-    dodaj_btn = ttk.Button(notatnik_frame, text="Dodaj notatkę",
-                           command=lambda: dodaj_notatke(notatka_entry, login, notatki_listbox))
-    dodaj_btn.pack(padx=10, pady=5)
+    wyszukaj_label = tk.Label(notatnik_frame, text="Wyszukaj notatkę:", bg="#2F2F2F", fg="white")
+    wyszukaj_label.grid(row=0, column=2, padx=10)
 
-    usun_notatke_btn = ttk.Button(notatnik_frame, text="Usuń notatkę",
-                                  command=lambda: usun_wybrana_notatka(notatki_listbox, notatka_entry, login))
-    usun_notatke_btn.pack(padx=10, pady=5)
+    wyszukaj_entry = ttk.Entry(notatnik_frame)
+    wyszukaj_entry.grid(row=0, column=3, padx=10)
 
-    notatki_listbox = tk.Listbox(notatnik_frame, height=10, width=50)
-    notatki_listbox.pack(padx=10, pady=10)
+    wyszukaj_btn = ttk.Button(notatnik_frame, text="Szukaj", command=lambda: wyszukaj_notatke(wyszukaj_entry,
+                                                                                              login, notatki_listbox))
+    wyszukaj_btn.grid(row=0, column=4, padx=10)
+
+    photo_add = tk.PhotoImage(file=r"image/add_btn.jpg")
+    dodaj_btn = tk.Button(notatnik_frame, text="Dodaj notatkę", image=photo_add, bg="#5CB85C", fg="white",
+                          command=lambda: dodaj_notatke(notatka_entry, login, notatki_listbox))
+    dodaj_btn.grid(row=2, column=0, padx=10, pady=5)
+
+    photo_delete = tk.PhotoImage(file=r"image/delete_btn.jpg")
+    usun_notatke_btn = tk.Button(notatnik_frame, text="Usuń notatkę", image=photo_delete, bg="#D9534F", fg="white",
+                                 command=lambda: usun_wybrana_notatka(notatki_listbox, notatka_entry, login))
+    usun_notatke_btn.grid(row=2, column=1, padx=10, pady=5)
+
+    notatki_listbox = tk.Listbox(notatnik_frame, height=15, width=50, bg="#4F4F4F", fg="white",
+                                 selectbackground="#6C757D", selectforeground="white")
+    notatki_listbox.grid(row=1, column=3, rowspan=2, padx=10, pady=10)
 
     notatki_listbox.bind('<<ListboxSelect>>',
                          lambda event: wyswietl_zaznaczona_notatka(notatki_listbox, notatka_entry, login))
 
-    wyloguj_btn = ttk.Button(notatnik_frame, text="Wyloguj", command=lambda: wyloguj(notatnik_frame))
-    wyloguj_btn.pack(pady=10)
+    photo_logout = tk.PhotoImage(file=r"image/logout_btn.jpg")
+    wyloguj_btn = ttk.Button(notatnik_frame, text="Wyloguj", image=photo_logout,
+                             command=lambda: wyloguj(notatnik_frame))
+    wyloguj_btn.grid(row=3, column=0, pady=10)
 
     wyswietl_notatki(notatki_listbox, login)
 
@@ -90,7 +109,7 @@ def wyswietl_notatki(notatki_listbox, login):
 
 
 def wyswietl_zaznaczona_notatka(notatki_listbox, notatka_entry, login):
-    selected_index = notatki_listbox.curselection()  # zwraca wybraną wartość z listy listbox
+    selected_index = notatki_listbox.curselection()
     if selected_index:
         selected_index = selected_index[0]
         user_id = baza.get_user_id(login)
@@ -121,6 +140,7 @@ def wyloguj(notatnik_frame):
 def zaladuj_okno_logowania():
     global login_frame
     root.geometry("300x150")
+    root.configure(bg="#2F2F2F")
 
     login_frame = tk.Frame(root)
     login_frame.pack(pady=20)
@@ -148,7 +168,8 @@ def zaladuj_okno_logowania():
 
 root = tk.Tk()
 root.title("Notatnik")
-root.iconbitmap("icon.ico")
+root.configure(bg="#2F2F2F")
+root.iconbitmap("image/icon.ico")
 
 zaladuj_okno_logowania()
 
