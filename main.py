@@ -36,6 +36,10 @@ def otworz_notatnik(login):
     login_frame.destroy()
     root.geometry("800x600")
 
+    photo_add = tk.PhotoImage(file=r"image/add_btn.jpg")
+    photo_delete = tk.PhotoImage(file=r"image/delete_btn.jpg")
+    photo_logout = tk.PhotoImage(file=r"image/logout_btn.jpg")
+
     notatnik_frame = tk.Frame(root, bg="#2F2F2F")
     notatnik_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
@@ -58,12 +62,10 @@ def otworz_notatnik(login):
                                                                                               login, notatki_listbox))
     wyszukaj_btn.grid(row=0, column=4, padx=10)
 
-    photo_add = tk.PhotoImage(file=r"image/add_btn.jpg")
     dodaj_btn = tk.Button(notatnik_frame, text="Dodaj notatkę", image=photo_add, bg="#5CB85C", fg="white",
                           command=lambda: dodaj_notatke(notatka_entry, login, notatki_listbox))
     dodaj_btn.grid(row=2, column=0, padx=10, pady=5)
 
-    photo_delete = tk.PhotoImage(file=r"image/delete_btn.jpg")
     usun_notatke_btn = tk.Button(notatnik_frame, text="Usuń notatkę", image=photo_delete, bg="#D9534F", fg="white",
                                  command=lambda: usun_wybrana_notatka(notatki_listbox, notatka_entry, login))
     usun_notatke_btn.grid(row=2, column=1, padx=10, pady=5)
@@ -75,7 +77,6 @@ def otworz_notatnik(login):
     notatki_listbox.bind('<<ListboxSelect>>',
                          lambda event: wyswietl_zaznaczona_notatka(notatki_listbox, notatka_entry, login))
 
-    photo_logout = tk.PhotoImage(file=r"image/logout_btn.jpg")
     wyloguj_btn = ttk.Button(notatnik_frame, text="Wyloguj", image=photo_logout,
                              command=lambda: wyloguj(notatnik_frame))
     wyloguj_btn.grid(row=3, column=0, pady=10)
