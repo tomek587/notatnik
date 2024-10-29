@@ -47,7 +47,7 @@ class Database:
             self.conn = None
 
     def check_user(self, login, password):
-        query = "SELECT * FROM users WHERE login = %s AND password = %s"
+        query = "SELECT * FROM users WHERE login = %s AND password = SHA2(%s, 256)"
         self.cursor.execute(query, (login, password))
         user = self.cursor.fetchone()
         return user
