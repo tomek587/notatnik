@@ -54,7 +54,7 @@ class Database:
 
     def insert_user(self, login, password):
         try:
-            query = "INSERT INTO users (login, password) VALUES (%s, %s)"
+            query = "INSERT INTO users (login, password) VALUES (%s, SHA2(%s, 256))"
             self.cursor.execute(query, (login, password))
             self.conn.commit()
         except mysql.connector.IntegrityError:
