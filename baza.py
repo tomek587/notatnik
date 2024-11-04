@@ -9,16 +9,13 @@ class Database:
             self.conn = connect
             self.cursor = self.conn.cursor()
 
-            self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
-            self.conn.commit()
-
+            self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{database}`")
             self.conn.database = database
 
             self.create_tables()
 
         except Error as e:
             print(f"Błąd przy tworzeniu bazy lub połączeniu: {e}")
-            self.conn = None
 
     def create_tables(self):
         try:
@@ -33,7 +30,7 @@ class Database:
             self.cursor.execute("""
                 CREATE TABLE IF NOT EXISTS notatki (
                     id INT AUTO_INCREMENT PRIMARY KEY,
-                    tresc TEXT NOT NULL,
+                    tresc VARCHAR(255) NOT NULL,
                     user_id INT,
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
                     time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
