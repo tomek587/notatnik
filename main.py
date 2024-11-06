@@ -1,44 +1,25 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
-from baza import Database
-import configparser
+from baza import baza
 
-
-config = configparser.ConfigParser()
-config.read("config.ini")
-
-host = config["baza"]["host"]
-user = config["baza"]["user"]
-password = config["baza"]["password"]
-database = config["baza"]["dbname"]
-
-baza = Database(host=host, user=user, password=password, database=database)
-baza.create_tables()
-
-def rejestracja():
-    login = login_entry.get().strip()
-    password = haslo_entry.get().strip()
-
-    if login and password:
-        if baza.check_user(login, password):
-            messagebox.showerror(title="Error", message="Taki użytkownik już istnieje")
-        else:
-            baza.insert_user(login, password)
-            otworz_notatnik(login)
-    else:
-        messagebox.showerror(title="Error", message="Podaj login i hasło")
 
 def logowanie():
     login = login_entry.get().strip()
     password = haslo_entry.get().strip()
 
-    user = baza.check_user(login, password)
-
-    if user:
-        otworz_notatnik(login)
+    if login and password:
+        if baza.check_user(login, password):
+            otworz_notatnik(login)
+        else:
+            if not baza.check_user_exists(login):
+                baza.insert_user(login, password)
+                otworz_notatnik(login)
+            else:
+                messagebox.showerror(title="Error", message="Podano niepoprawne hasło")
     else:
-        messagebox.showerror(title="Error", message="Błędny login lub hasło")
+        messagebox.showerror(title="Error", message="Podaj login i hasło")
+
 
 def otworz_notatnik(login):
     login_frame.destroy()
@@ -50,153 +31,136 @@ def otworz_notatnik(login):
 
     top_frame = tk.Frame(notatnik_frame, bg="#2E2E2E")
     top_frame.pack(side=tk.TOP, fill=tk.X, pady=5)
+    tk.Label(top_frame, text=f"Witaj, {login}", font=("Helvetica", 14), bg="#2E2E2E", fg="white").pack(side=tk.LEFT,
+                                                                                                       padx=10)
+    ttk.Button(top_frame, text="Wyloguj", command=lambda: wyloguj(notatnik_frame)).pack(side=tk.LEFT, padx=10)
 
-    tk.Label(top_frame, text=f"Witaj, {login}", font=("Helvetica", 14), bg="#2E2E2E", fg="white").pack(side=tk.LEFT, padx=10)
-
-    wyloguj_btn = ttk.Button(top_frame, text="Wyloguj", command=lambda: wyloguj(notatnik_frame), style="TButton")
-    wyloguj_btn.pack(side=tk.LEFT, padx=10)
-
-    search_frame = tk.Frame(top_frame, bg="#2E2E2E")
-    search_frame.pack(side=tk.RIGHT, padx=10)
-
-    search_entry = tk.Entry(search_frame, width=20, bg="#444444", fg="white", insertbackground='white',)
-    search_entry.pack(side=tk.LEFT, padx=5)
-
-    search_btn = ttk.Button(search_frame, text="Szukaj", command=lambda: wyswietl_notatki(notatki_listbox, login,
-                                                                                          search_entry.get()))
-    search_btn.pack(side=tk.LEFT)
+    search_entry = tk.Entry(top_frame, width=20, bg="#444444", fg="white")
+    search_entry.pack(side=tk.RIGHT, padx=5)
+    ttk.Button(top_frame, text="Szukaj",
+               command=lambda: wyswietl_notatki(notatki_listbox, login, search_entry.get())).pack(side=tk.RIGHT)
 
     left_frame = tk.Frame(notatnik_frame, bg="#2E2E2E")
     left_frame.pack(side=tk.LEFT, padx=10)
-
-    notatka_entry = tk.Text(left_frame, height=10, width=30, bg="#444444", fg="white", insertbackground='white')
+    notatka_entry = tk.Text(left_frame, height=10, width=30, bg="#444444", fg="white")
     notatka_entry.pack(padx=5, pady=5)
 
     button_frame = tk.Frame(left_frame, bg="#2E2E2E")
     button_frame.pack(pady=5)
 
-    add_icon = Image.open("image/add_btn.png").resize((40, 40))
-    add_icon = ImageTk.PhotoImage(add_icon)
+    global add_icon, delete_icon
+    add_icon = ImageTk.PhotoImage(Image.open("image/add_btn.png").resize((40, 40)))
+    delete_icon = ImageTk.PhotoImage(Image.open("image/delete_btn.jpg").resize((40, 40)))
 
-    dodaj_btn = tk.Button(button_frame, image=add_icon, bg="#389654", fg="white",
-                          command=lambda: dodaj_notatke(notatka_entry, login, notatki_listbox))
-    dodaj_btn.image = add_icon
-    dodaj_btn.pack(side=tk.LEFT, padx=5)
-
-    delete_icon = Image.open("image/delete_btn.jpg").resize((40, 40))
-    delete_icon = ImageTk.PhotoImage(delete_icon)
-
-    usun_notatke_btn = tk.Button(button_frame, image=delete_icon, bg="#b83737", fg="white",
-                                 command=lambda: usun_wybrana_notatka(notatki_listbox, notatka_entry, login))
-    usun_notatke_btn.image = delete_icon
-    usun_notatke_btn.pack(side=tk.LEFT, padx=5)
+    tk.Button(button_frame, image=add_icon, bg="#389654",
+              command=lambda: dodaj_notatke(notatka_entry, login, notatki_listbox)).pack(side=tk.LEFT, padx=5)
+    tk.Button(button_frame, image=delete_icon, bg="#b83737",
+              command=lambda: usun_wybrana_notatka(notatki_listbox, notatka_entry, login)).pack(side=tk.LEFT, padx=5)
 
     right_frame = tk.Frame(notatnik_frame, bg="#2E2E2E")
     right_frame.pack(side=tk.LEFT, padx=10, anchor='n')
-
     notatki_listbox = tk.Listbox(right_frame, height=10, width=40, bg="#444444", fg="white", selectbackground="#555555")
     notatki_listbox.pack(padx=5, pady=5)
-
     notatki_listbox.bind('<<ListboxSelect>>',
                          lambda event: wyswietl_zaznaczona_notatka(notatki_listbox, notatka_entry, login))
 
     wyswietl_notatki(notatki_listbox, login)
 
-def dodaj_notatke(notatka_entry, login, notatki_listbox):
-    text = notatka_entry.get("1.0", tk.END).strip()
-    if text:
-        user_id = baza.get_user_id(login)
-        baza.insert_notatka(text, user_id)
-        notatka_entry.delete("1.0", tk.END)
-        wyswietl_notatki(notatki_listbox, login)
-    else:
-        messagebox.showerror(title="Error", message="Notatka nie może być pusta")
 
 def wyswietl_notatki(notatki_listbox, login, search_term=""):
     notatki_listbox.delete(0, tk.END)
+
     user_id = baza.get_user_id(login)
     notatki = baza.select_notatki_by_user(user_id)
 
-    if not notatki:
-        notatki_listbox.insert(tk.END, "Brak notatek")
+    if search_term:
+        filtered_notatki = [n for n in notatki if search_term in n[1]]
     else:
-        filtered_notatki = [notatka for notatka in notatki if search_term.lower() in notatka[1].lower()]
+        filtered_notatki = notatki
 
-        if not filtered_notatki:
-            notatki_listbox.insert(tk.END, "Brak wyników")
+    if len(filtered_notatki) == 0:
+        if search_term == "":
+            notatki_listbox.insert(tk.END, "Brak notatek")
         else:
-            for notatka in filtered_notatki:
-                short_text = (notatka[1][:39] + '...') if len(notatka[1]) > 30 else notatka[1]
-                timestamp = notatka[3].strftime('%d-%m-%Y')
-                notatki_listbox.insert(tk.END, f"{short_text}  {timestamp}")
+            notatki_listbox.insert(tk.END, "Brak wyników")
+    else:
+        for n in filtered_notatki:
+            if len(n[1]) > 30:
+                display_text = n[1][:40] + '...'
+            else:
+                display_text = n[1]
+            notatki_listbox.insert(tk.END, f"{display_text}  {n[3].strftime('%d-%m-%Y')}")
+
 
 def wyswietl_zaznaczona_notatka(notatki_listbox, notatka_entry, login):
-    selected_index = notatki_listbox.curselection()
-    if selected_index:
-        selected_index = selected_index[0]
-        user_id = baza.get_user_id(login)
-        notatki = baza.select_notatki_by_user(user_id)
-        if selected_index < len(notatki):
-            notatka_entry.delete("1.0", tk.END)
-            notatka_entry.insert(tk.END, notatki[selected_index][1])
+    selected = notatki_listbox.curselection()
+
+    if len(selected) == 0:
+        return
+    elif notatki_listbox.get(selected[0]) == "Brak notatek" or notatki_listbox.get(selected[0]) == "Brak wyników":
+        return
+
+    user_id = baza.get_user_id(login)
+    notatki = baza.select_notatki_by_user(user_id)
+
+    if selected[0] < len(notatki):
+        notatka_entry.delete("1.0", tk.END)
+        notatka_entry.insert(tk.END, notatki[selected[0]][1])
+
+
+def dodaj_notatke(notatka_entry, login, notatki_listbox):
+    text = notatka_entry.get("1.0", tk.END).strip()
+    if text:
+        notatka_entry.delete("1.0", tk.END)
+        baza.insert_notatka(text, baza.get_user_id(login))
+        wyswietl_notatki(notatki_listbox, login)
+    else:
+        messagebox.showerror("Error", "Notatka nie może być pusta")
+
 
 def usun_wybrana_notatka(notatki_listbox, notatka_entry, login):
-    selected_index = notatki_listbox.curselection()
-    if selected_index:
-        selected_index = selected_index[0]
-        user_id = baza.get_user_id(login)
-        notatki = baza.select_notatki_by_user(user_id)
-        if selected_index < len(notatki):
-            notatka_id = notatki[selected_index][0]
-            baza.delete_notatka(notatka_id)
-            notatka_entry.delete("1.0", tk.END)
-            wyswietl_notatki(notatki_listbox, login)
+    selected = notatki_listbox.curselection()
+
+    if len(selected) == 0:
+        return
+    elif notatki_listbox.get(selected[0]) == "Brak notatek" or notatki_listbox.get(selected[0]) == "Brak wyników":
+        return
+
+    notatka_id = baza.select_notatki_by_user(baza.get_user_id(login))[selected[0]][0]
+    baza.delete_notatka(notatka_id)
+
+    notatka_entry.delete("1.0", tk.END)
+    wyswietl_notatki(notatki_listbox, login)
+
 
 def wyloguj(notatnik_frame):
     notatnik_frame.destroy()
     zaladuj_okno_logowania()
 
+
 def zaladuj_okno_logowania():
-    global login_frame
+    global login_frame, login_entry, haslo_entry
     root.geometry("300x150")
     root.configure(bg="#2E2E2E")
 
     login_frame = tk.Frame(root, bg="#2E2E2E")
     login_frame.pack(pady=20)
 
-    login_label = ttk.Label(login_frame, text="Login:", style="TLabel")
-    login_label.grid(row=0, column=0, padx=10, pady=5)
+    tk.Label(login_frame, text="Login:", bg="#2E2E2E", fg="white").grid(row=0, column=0, padx=10, pady=5)
 
-    global login_entry
-    login_entry = ttk.Entry(login_frame)
+    login_entry = tk.Entry(login_frame, bg="#444444", fg="white")
     login_entry.grid(row=0, column=1, padx=10, pady=5)
 
-    haslo_label = ttk.Label(login_frame, text="Hasło:", style="TLabel")
-    haslo_label.grid(row=1, column=0, padx=10, pady=5)
+    tk.Label(login_frame, text="Hasło:", bg="#2E2E2E", fg="white").grid(row=1, column=0, padx=10, pady=5)
 
-    global haslo_entry
-    haslo_entry = ttk.Entry(login_frame, show="*")
+    haslo_entry = tk.Entry(login_frame, show="*", bg="#444444", fg="white")
     haslo_entry.grid(row=1, column=1, padx=10, pady=5)
 
-    logowanie_btn = ttk.Button(login_frame, text="Zaloguj", command=logowanie, style="TButton")
-    logowanie_btn.grid(row=2, column=0, padx=10, pady=10)
+    ttk.Button(login_frame, text="Zaloguj", command=logowanie).grid(row=2, column=0, columnspan=2, pady=10)
 
-    rejestracja_btn = ttk.Button(login_frame, text="Zarejestruj", command=rejestracja, style="TButton")
-    rejestracja_btn.grid(row=2, column=1, padx=10, pady=10)
 
 root = tk.Tk()
 root.title("Notatnik")
 root.iconbitmap("image/icon.ico")
-
-style = ttk.Style()
-style.configure("TLabel", background="#2E2E2E", foreground="white")
-
-style.configure("TButton",
-                background="#4E4E4E", foreground="white", padding=5)
-style.map("TButton",
-          background=[("active", "#6E6E6E"), ("pressed", "#5E5E5E")],
-          foreground=[("active", "white"), ("pressed", "white")])
-
 zaladuj_okno_logowania()
-
 root.mainloop()
