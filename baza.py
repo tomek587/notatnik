@@ -107,6 +107,7 @@ class Database:
         if self.conn:
             self.conn.close()
 
+
 config = configparser.ConfigParser()
 config.read("config.ini")
 

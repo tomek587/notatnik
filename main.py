@@ -86,7 +86,7 @@ def wyswietl_notatki(notatki_listbox, login, search_term=""):
     else:
         for n in filtered_notatki:
             if len(n[1]) > 30:
-                display_text = n[1][:40] + '...'
+                display_text = n[1][:33] + '...'
             else:
                 display_text = n[1]
             notatki_listbox.insert(tk.END, f"{display_text}  {n[3].strftime('%d-%m-%Y')}")
